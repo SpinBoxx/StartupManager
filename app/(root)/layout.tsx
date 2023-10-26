@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Navbar from "./components/navbar";
+import Container from "@/components/container";
 
 interface Props {
   children: ReactNode;
@@ -8,7 +9,8 @@ interface Props {
 const MainLayout = ({ children }: Props) => {
   return (
     <div>
-      <Navbar /> {children}
+      <Navbar />
+      <Container className="mt-4">{children}</Container>
     </div>
   );
 };
