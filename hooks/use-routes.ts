@@ -1,5 +1,6 @@
 "use client";
 
+import { Home, Import, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
@@ -9,15 +10,23 @@ export const useRoutes = () => {
   const routes = useMemo(
     () => [
       {
+        label: "Accueil",
+        href: "/",
+        active: pathname === "/",
+        isMobile: true,
+        icon: Home,
+      },
+      {
         label: "Import",
         href: "/import",
         active: pathname === "/import",
+        icon: Import,
       },
       {
         label: "Paramètres",
-        href: "/parametre",
-
-        active: pathname === "/parametre",
+        href: "/parametres",
+        active: pathname === "/parametres",
+        icon: Settings,
       },
     ],
     [pathname]
