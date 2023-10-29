@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Import, Settings } from "lucide-react";
+import { Home, Import, Settings, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
@@ -10,23 +10,15 @@ export const useSettingsRoutes = () => {
   const routes = useMemo(
     () => [
       {
-        label: "Accueil",
-        href: "/",
-        active: pathname === "/",
-        isMobile: true,
-        icon: Home,
-      },
-      {
-        label: "Import",
-        href: "/import",
-        active: pathname === "/import",
-        icon: Import,
-      },
-      {
-        label: "Paramètres",
-        href: "/parametres",
-        active: pathname === "/parametres",
-        icon: Settings,
+        section: "GESTION_BDD",
+        routes: [
+          {
+            label: "Utilisateurs",
+            href: "/parametres/users",
+            active: pathname === "/parametres/users",
+            icon: User,
+          },
+        ],
       },
     ],
     [pathname]

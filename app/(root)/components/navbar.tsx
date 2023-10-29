@@ -50,8 +50,8 @@ const Navbar = () => {
                   <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
                 <div className="z-40 mt-5 flex flex-col gap-4  py-3">
-                  {routes.map((route) => (
-                    <Link href={route.href}>
+                  {routes.map((route, index) => (
+                    <Link href={route.href} key={index}>
                       <Button
                         onClick={() => setSidebarOpen(false)}
                         variant="ghost"
