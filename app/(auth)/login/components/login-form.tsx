@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,7 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { signIn, useSession } from "next-auth/react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { authLoginSuccessMessage } from "@/zod-message";
 
 interface Props {
   className: string;
@@ -24,7 +27,7 @@ interface Props {
 const LoginForm = ({ className }: Props) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const router = useRouter();
   const formSchema = z.object({
     email: z.string().email("L'email n'est pas valide"),
     password: z.string(),
@@ -38,16 +41,31 @@ const LoginForm = ({ className }: Props) => {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    setLoading(true);
+    signIn("credentials", {
+      ...values,
+      redirect: false,
+    })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error(callback.error);
+        }
+
+        if (callback?.ok && !callback.error) {
+          toast.success(authLoginSuccessMessage);
+          setTimeout(() => {
+            router.push("/");
+          }, 1000);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   return (
     <div className={className}>
-      {" "}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -73,6 +91,7 @@ const LoginForm = ({ className }: Props) => {
                 <FormControl>
                   <div className="relative">
                     <Input
+                      autoComplete="false"
                       placeholder="Entrez votre mot de passe ici..."
                       type={showPassword ? "text" : "password"}
                       {...field}
@@ -96,7 +115,11 @@ const LoginForm = ({ className }: Props) => {
             )}
           />
           <Button type="submit" disabled={loading} className="w-full">
-            Se connecter
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Se connecter"
+            )}
           </Button>
         </form>
       </Form>

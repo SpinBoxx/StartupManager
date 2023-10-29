@@ -89,7 +89,7 @@ export default function ModalAddUpdate() {
       .string({ required_error: "Le mot de passe n'est pas valide." })
       .min(passwordMinLength, passwordMinErrorMessage)
       .max(passwordMaxLength, passwordMaxErrorMessage)
-      .or(z.literal("")),
+      .or(z.literal(undefined)),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,6 +105,7 @@ export default function ModalAddUpdate() {
 
   useEffect(() => {
     reset({
+      // password: ,
       email: user ? user.email : "",
       username: user ? user.username : "",
       role: user ? user.role : undefined,

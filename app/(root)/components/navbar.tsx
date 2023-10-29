@@ -22,13 +22,15 @@ import {
 } from "@/components/ui/sheet";
 import { useRoutes } from "@/hooks/use-routes";
 import { cn } from "@/lib/utils";
-import { LogOut, MenuIcon, X } from "lucide-react";
+import { LogOut, MenuIcon, User, X } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { ElementRef, useRef, useState } from "react";
 
 const Navbar = () => {
   const routes = useRoutes();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const session = useSession();
 
   return (
     <div className=" w-full py-3 shadow-md ">
@@ -73,7 +75,7 @@ const Navbar = () => {
             <div className="hidden">Import</div>
           </div>
 
-          <div>
+          <div className="flex items-center gap-x-3">
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar className="select-none">
@@ -88,10 +90,18 @@ const Navbar = () => {
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Se déconnecter</span>
-                  </DropdownMenuItem>
+                  <Link href="/mon-profil">
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Voir mon profil</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  {session.data && (
+                    <DropdownMenuItem onClick={() => signOut()}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Se déconnecter</span>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>

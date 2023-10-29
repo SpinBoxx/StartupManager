@@ -13,3 +13,4 @@ export const usernameMinLength = 3;
 export const usernameMaxLength = 10;
 export const usernameMinErrorMessage = `Username doit faire au minimum ${usernameMinLength} caractères.`;
 export const usernameMaxErrorMessage = `Username doit faire au maximum ${usernameMaxLength} caractères.`;
+export const authLoginSuccessMessage = "Vous etes désormais connecté !";
