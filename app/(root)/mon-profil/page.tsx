@@ -1,25 +1,31 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
-import { User } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Loader2, User } from "lucide-react";
 import { useSession } from "next-auth/react";
+import MyProfilForm from "./components/my-profil-form";
+import ProfilInformation from "./components/profil-info";
+import getSession from "@/actions/get-session";
+import { Suspense } from "react";
+import prismadb from "@/lib/prismadb";
 
-const MyProfilPage = () => {
-  const session = useSession();
-  console.log(session.data?.user);
+const MyProfilPage = async () => {
+  const session = await getSession();
+
+  if (!session) return <Loader2 className="animate-spin" />;
+
+  const user = await prismadb.user.findFirst({
+    where: {
+      email: session.user.email,
+    },
+  });
+  if (!user) return <Loader2 className="animate-spin" />;
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="rounded-full border border-muted-foreground p-2">
-        <User className="h-20 w-20 text-muted-foreground" />
-      </div>
-      <div className="mt-4 font-bold">
-        <span>@</span>
-        <span>{session.data?.user.email}</span>
-      </div>
-      <div>
-        <Badge>{session.data?.user.role}</Badge>
-      </div>
+    <div className="flex flex-col  justify-center">
+      <ProfilInformation user={user} />
+
+      <Separator className="mt-8" />
+      {user ? <MyProfilForm className="mt-4" user={user} /> : null}
     </div>
   );
 };
