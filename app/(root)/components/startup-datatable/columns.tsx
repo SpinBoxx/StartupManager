@@ -5,13 +5,34 @@ import { DataTableColumnHeader } from "./datatable-header";
 import ColumnActions from "./column-actions";
 import type { Promo, Startup } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
-export type FilterColumnType = Startup & { promo: Promo; promoName: string };
+export type FilterColumnType = Startup & { promoName: string };
 
 export const columns: ColumnDef<FilterColumnType>[] = [
   {
-    accessorKey: "id",
-    header: "Id",
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(!!value);
+          console.log(table.getSelectedRowModel());
+        }}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorKey: "name",

@@ -3,54 +3,54 @@ import { NextResponse } from "next/server";
 
 interface Props {
   params: {
-    promoId: string;
+    startupId: string;
   };
 }
 
-const noPromoId = "L'id de la promo est requis !";
+const noStartupId = "L'id de la startup est requis !";
 
 export async function GET(req: Request, params: Props) {
-  const { promoId } = { ...params.params };
+  const { startupId } = { ...params.params };
 
-  if (!promoId) return NextResponse.json({ message: noPromoId });
+  if (!startupId) return NextResponse.json({ message: noStartupId });
 
-  const promo = await prismadb.promo.findFirst({
+  const startup = await prismadb.startup.findFirst({
     where: {
-      id: Number(promoId),
+      id: Number(startupId),
     },
   });
 
-  return NextResponse.json(promo);
+  return NextResponse.json(startup);
 }
 
 export async function DELETE(req: Request, params: Props) {
-  const { promoId } = { ...params.params };
+  const { startupId } = { ...params.params };
 
-  if (!promoId) return NextResponse.json({ message: noPromoId });
+  if (!startupId) return NextResponse.json({ message: noStartupId });
 
-  const promo = await prismadb.promo.delete({
+  const startup = await prismadb.startup.delete({
     where: {
-      id: Number(promoId),
+      id: Number(startupId),
     },
   });
 
-  return NextResponse.json(promo);
+  return NextResponse.json(startup);
 }
 
 export async function PATCH(req: Request, params: Props) {
-  const { promoId } = { ...params.params };
+  const { startupId } = { ...params.params };
   const body = await req.json();
 
-  if (!promoId) return NextResponse.json({ message: noPromoId });
+  if (!startupId) return NextResponse.json({ message: noStartupId });
 
-  const promo = await prismadb.promo.update({
+  const startup = await prismadb.startup.update({
     where: {
-      id: Number(promoId),
+      id: Number(startupId),
     },
     data: {
       ...body,
     },
   });
 
-  return NextResponse.json(promo);
+  return NextResponse.json(startup);
 }

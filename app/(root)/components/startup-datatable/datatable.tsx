@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTableToolbar } from "./datatable-toolbar";
 import { FilterColumnType } from "./columns";
 

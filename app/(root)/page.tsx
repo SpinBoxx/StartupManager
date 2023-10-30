@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import prismadb from "@/lib/prismadb";
 import { columns } from "./components/startup-datatable/columns";
 import ModalAddUpdate from "./components/startup-datatable/modal-add-update";
+import ExportButton from "./components/export-button";
 
 export const metadata: Metadata = {
   title: "Startup Manager",
@@ -19,6 +20,7 @@ export default async function Home() {
 
   const formattedStartups = startups.map((startup) => ({
     ...startup,
+    promo: undefined,
     promoName: startup.promo.name,
   }));
 
@@ -42,6 +44,7 @@ export default async function Home() {
           nbItem: startups.length,
         }}
       />
+
       <DataTable className="mt-5" columns={columns} data={formattedStartups} />
       <ModalAddUpdate promotions={promotions} />
     </div>

@@ -1,8 +1,7 @@
 "use client";
 
-import { Copy, Edit, Eye, Loader2, Trash } from "lucide-react";
+import { Eye, Loader2, Trash } from "lucide-react";
 import React, { useState } from "react";
-import { useModal } from "./use-modal";
 import { fetchCustom } from "@/lib/custom-fetch";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -13,7 +12,6 @@ interface Props {
 }
 
 export default function ColumnActions({ dataId }: Props) {
-  const { onOpen } = useModal();
   const [loading, setLoading] = useState<{
     global: boolean;
     action?: "edit" | "delete";
@@ -21,19 +19,19 @@ export default function ColumnActions({ dataId }: Props) {
     global: false,
   });
   const router = useRouter();
-
+  const apiEndpoint = "startup";
   const onViewDetail = () => {
     router.push(`/startup/${dataId}`);
   };
 
   const onDelete = async () => {
     setLoading({ global: true, action: "delete" });
-    const response = await fetchCustom(`/users/${dataId}`, {
+    const response = await fetchCustom(`/${apiEndpoint}/${dataId}`, {
       method: "DELETE",
     });
     const data = await response.json();
     if (response.ok) {
-      toast.success("L'utilisateur a bien été supprimé");
+      toast.success("La startup a bien été supprimé");
       setLoading({ global: false, action: "delete" });
       router.refresh();
     } else {
