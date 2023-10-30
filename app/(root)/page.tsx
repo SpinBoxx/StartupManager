@@ -1,10 +1,49 @@
 import { Metadata } from "next";
-import Image from "next/image";
+
+import { DataTable } from "./components/startup-datatable/datatable";
+import Header from "@/components/header";
+import prismadb from "@/lib/prismadb";
+import { columns } from "./components/startup-datatable/columns";
+import ModalAddUpdate from "./components/startup-datatable/modal-add-update";
 
 export const metadata: Metadata = {
   title: "Startup Manager",
 };
 
-export default function Home() {
-  return <div>Bodty</div>;
+export default async function Home() {
+  const startups = await prismadb.startup.findMany({
+    include: {
+      promo: true,
+    },
+  });
+
+  const formattedStartups = startups.map((startup) => ({
+    ...startup,
+    promoName: startup.promo.name,
+  }));
+
+  const promotions = await prismadb.promo.findMany();
+  // await prismadb.startup.create({
+  //   data: {
+  //     name: "Promo test 1",
+  //     description: "Desctipnio tempo",
+  //     logo: "logo test",
+  //     promoId: 2,
+  //   },
+  // });
+
+  return (
+    <div>
+      <Header
+        data={{
+          title: "Startups",
+          description:
+            "Retrouve ici, toutes les startup qui sont enregistrées sur la platforme.",
+          nbItem: startups.length,
+        }}
+      />
+      <DataTable className="mt-5" columns={columns} data={formattedStartups} />
+      <ModalAddUpdate promotions={promotions} />
+    </div>
+  );
 }

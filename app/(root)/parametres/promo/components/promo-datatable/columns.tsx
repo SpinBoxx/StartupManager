@@ -3,10 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./datatable-header";
 import ColumnActions from "./column-actions";
-import type { Promo, Startup } from "@prisma/client";
-import { Badge } from "@/components/ui/badge";
+import type { Promo } from "@prisma/client";
 
-export type FilterColumnType = Startup & { promo: Promo; promoName: string };
+export type FilterColumnType = Promo;
 
 export const columns: ColumnDef<FilterColumnType>[] = [
   {
@@ -16,14 +15,7 @@ export const columns: ColumnDef<FilterColumnType>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Startup" />
-    ),
-  },
-  {
-    accessorKey: "promoName",
-    header: "Promo",
-    cell: ({ row }) => (
-      <Badge variant="secondary">{row.original.promoName}</Badge>
+      <DataTableColumnHeader column={column} title="Nom" />
     ),
   },
   {

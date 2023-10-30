@@ -14,25 +14,15 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const { onOpen } = useModal();
+  const { onOpen, resetData } = useModal();
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filtrer par startup..."
+          placeholder="Filtrer par le nom..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className=" w-[150px] lg:w-[250px]"
-        />
-        <Input
-          placeholder="Filtrer par promo..."
-          value={
-            (table.getColumn("promoName")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("promoName")?.setFilterValue(event.target.value)
           }
           className=" w-[150px] lg:w-[250px]"
         />
@@ -48,9 +38,14 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div>
-        <Button className="" onClick={onOpen}>
-          <Plus className="h-4 w-4 md:mr-2" />{" "}
-          <span className="hidden md:block">Ajouter une startup</span>
+        <Button
+          className=""
+          onClick={() => {
+            resetData();
+            onOpen();
+          }}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Ajouter une promo
         </Button>
       </div>
     </div>

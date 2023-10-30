@@ -1,5 +1,10 @@
 import { Separator } from "@/components/ui/separator";
 import LoginForm from "./components/login-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "SUM - Login",
+};
 
 const LoginPage = () => {
   return (

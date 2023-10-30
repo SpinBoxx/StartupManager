@@ -21,10 +21,11 @@ export default function ColumnActions({ dataId }: Props) {
     global: false,
   });
   const router = useRouter();
+  const apiEndpoint = "promo";
 
   const onEdit = async () => {
     setLoading({ global: true, action: "edit" });
-    const response = await fetchCustom(`/users/${dataId}`);
+    const response = await fetchCustom(`/${apiEndpoint}/${dataId}`);
     const data = await response.json();
     if (response.ok) {
       setData(data);
@@ -36,12 +37,12 @@ export default function ColumnActions({ dataId }: Props) {
 
   const onDelete = async () => {
     setLoading({ global: true, action: "delete" });
-    const response = await fetchCustom(`/users/${dataId}`, {
+    const response = await fetchCustom(`/${apiEndpoint}/${dataId}`, {
       method: "DELETE",
     });
     const data = await response.json();
     if (response.ok) {
-      toast.success("L'utilisateur a bien été supprimé");
+      toast.success("La promo a bien été supprimé");
       setLoading({ global: false, action: "delete" });
       router.refresh();
     } else {
