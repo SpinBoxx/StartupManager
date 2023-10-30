@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Edit, Loader2, Trash } from "lucide-react";
+import { Copy, Edit, Eye, Loader2, Trash } from "lucide-react";
 import React, { useState } from "react";
 import { useModal } from "./use-modal";
 import { fetchCustom } from "@/lib/custom-fetch";
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function ColumnActions({ dataId }: Props) {
-  const { onOpen, setData } = useModal();
+  const { onOpen } = useModal();
   const [loading, setLoading] = useState<{
     global: boolean;
     action?: "edit" | "delete";
@@ -22,16 +22,8 @@ export default function ColumnActions({ dataId }: Props) {
   });
   const router = useRouter();
 
-  const onEdit = async () => {
-    setLoading({ global: true, action: "edit" });
-    const response = await fetchCustom(`/users/${dataId}`);
-    const data = await response.json();
-    if (response.ok) {
-      setData(data);
-      setLoading({ global: false });
-    } else {
-      toast.error(data.message ?? "Une erreur innatendue est survenue");
-    }
+  const onViewDetail = () => {
+    router.push(`/startup/${dataId}`);
   };
 
   const onDelete = async () => {
@@ -55,11 +47,11 @@ export default function ColumnActions({ dataId }: Props) {
         <Loader2 className="h-3 w-3 animate-spin" />
       ) : (
         <Button
-          onClick={onEdit}
+          onClick={onViewDetail}
           variant="ghost"
           className="!h-auto !p-0 hover:!bg-transparent"
         >
-          <Edit className="h-4 w-4 cursor-pointer text-blue-500" />
+          <Eye className="h-4 w-4 cursor-pointer text-blue-500" />
         </Button>
       )}
       {loading.global && loading.action === "delete" ? (
