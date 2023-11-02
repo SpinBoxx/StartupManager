@@ -97,7 +97,9 @@ const Navbar = () => {
                     </DropdownMenuItem>
                   </Link>
                   {session.data && (
-                    <DropdownMenuItem onClick={() => signOut()}>
+                    <DropdownMenuItem
+                      onClick={() => signOut({ callbackUrl: "/login" })}
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Se déconnecter</span>
                     </DropdownMenuItem>

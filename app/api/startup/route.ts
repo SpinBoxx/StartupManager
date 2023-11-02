@@ -1,11 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-
-export async function GET(req: Request) {
-  const users = await prismadb.user.findMany();
-  return NextResponse.json(users);
-}
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -13,7 +7,7 @@ export async function POST(req: Request) {
   const { name } = body;
   if (!name)
     return NextResponse.json(
-      { message: "Le nom de la promo est requis" },
+      { message: "Le nom de la startup est requis" },
       { status: 400 }
     );
 

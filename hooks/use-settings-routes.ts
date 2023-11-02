@@ -1,6 +1,13 @@
 "use client";
 
-import { GraduationCap, Home, Import, Settings, User } from "lucide-react";
+import {
+  Contact,
+  GraduationCap,
+  Home,
+  Import,
+  Settings,
+  User,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
@@ -23,6 +30,12 @@ export const useSettingsRoutes = () => {
             href: "/parametres/promo",
             active: pathname === "/parametres/promo",
             icon: GraduationCap,
+          },
+          {
+            label: "Contacts",
+            href: "/parametres/contacts",
+            active: pathname === "/parametres/contacts",
+            icon: Contact,
           },
         ],
       },

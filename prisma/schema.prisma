@@ -28,8 +28,28 @@ model Startup {
   name String 
   description String 
   logo String?
+  city String
+  address String
+  latitude String
+  longitude String
+  createdAt DateTime
+
   promo Promo @relation(fields: [promoId], references: [id])
   promoId Int 
+
+  contacts Contact[]
+}
+
+model Contact {
+  id    Int     @id @default(autoincrement())
+  firstname String
+  lastname String
+  email String
+  phoneNumber String
+  status String
+
+  startup Startup? @relation(fields: [startupId], references: [id])
+  startupId Int? 
 }
 
 model Promo {

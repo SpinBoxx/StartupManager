@@ -14,3 +14,9 @@ export const usernameMaxLength = 10;
 export const usernameMinErrorMessage = `Username doit faire au minimum ${usernameMinLength} caractères.`;
 export const usernameMaxErrorMessage = `Username doit faire au maximum ${usernameMaxLength} caractères.`;
 export const authLoginSuccessMessage = "Vous etes désormais connecté !";
+
+export const firstnamePlaceholder = "Veuillez entrer le prénom ici...";
+export const lastnamePlaceholder = "Veuillez entrer le nom ici...";
+export const phoneNumberPlaceholder =
+  "Veuillez entrer le num. tel. ici... (Ex. 0102030405)";
+export const statusPlaceholder = "Veuillez entrer le statut ici...";
