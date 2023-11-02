@@ -18,6 +18,9 @@ export async function GET(req: Request, params: Props) {
     where: {
       id: Number(startupId),
     },
+    include: {
+      contacts: true,
+    },
   });
 
   return NextResponse.json(startup);

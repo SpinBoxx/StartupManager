@@ -3,11 +3,20 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./datatable-header";
 import ColumnActions from "./column-actions";
-import type { Promo, Startup } from "@prisma/client";
+import type { Contact, Promo, Startup } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ContactCard from "../../startup/[startupId]/components/contact-card";
 
-export type FilterColumnType = Startup & { promoName: string };
+export type FilterColumnType = Startup & {
+  promoName: string;
+  contact: Contact | undefined;
+};
 
 export const columns: ColumnDef<FilterColumnType>[] = [
   {
@@ -44,8 +53,31 @@ export const columns: ColumnDef<FilterColumnType>[] = [
     accessorKey: "promoName",
     header: "Promo",
     cell: ({ row }) => (
-      <Badge variant="secondary">{row.original.promoName}</Badge>
+      <Badge variant="secondary" className="whitespace-nowrap">
+        {row.original.promoName}
+      </Badge>
     ),
+  },
+  {
+    accessorKey: "contact",
+    header: "Contact",
+    cell: ({ row }) =>
+      row.original.contact ? (
+        <Popover>
+          <PopoverTrigger>
+            {row.original.contact.firstname} {row.original.contact.lastname}
+          </PopoverTrigger>
+          <PopoverContent className="!w-fit" align="center" side="top">
+            <ContactCard
+              variant="minimalist"
+              className="border-none shadow-none"
+              contact={row.original.contact}
+            />
+          </PopoverContent>
+        </Popover>
+      ) : (
+        "/"
+      ),
   },
   {
     id: "actions",

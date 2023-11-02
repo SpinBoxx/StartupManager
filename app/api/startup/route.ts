@@ -1,8 +1,13 @@
 import prismadb from "@/lib/prismadb";
 import { NextResponse } from "next/server";
 
+export async function GET(req: Request) {
+  const startups = await prismadb.startup.findMany({});
+  return NextResponse.json(startups);
+}
+
 export async function POST(req: Request) {
-  const body = await req.json();
+  let body = await req.json();
 
   const { name } = body;
   if (!name)
@@ -11,9 +16,27 @@ export async function POST(req: Request) {
       { status: 400 }
     );
 
-  const promo = await prismadb.startup.create({
-    data: { ...body },
+  body = {
+    ...body,
+    contacts: [2],
+  };
+
+  const contacts = await prismadb.contact.findMany({
+    where: {
+      id: {
+        in: [2],
+      },
+    },
   });
 
-  return NextResponse.json(promo);
+  const startup = await prismadb.startup.create({
+    data: {
+      ...body,
+      contacts: {
+        connect: contacts,
+      },
+    },
+  });
+
+  return NextResponse.json(startup);
 }

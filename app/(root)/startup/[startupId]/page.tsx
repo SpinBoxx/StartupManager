@@ -1,11 +1,12 @@
 import prismadb from "@/lib/prismadb";
 import { Edit, Pin } from "lucide-react";
-import Image from "next/image";
 import { redirect } from "next/navigation";
-import { TabsPage } from "./components/tabs";
+import { TabsSection } from "./components/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Metadata } from "next";
+import { start } from "repl";
 
 interface Props {
   params: {
@@ -13,10 +14,29 @@ interface Props {
   };
 }
 
+// or Dynamic metadata
+export async function generateMetadata({ params }: Props) {
+  const startup = await prismadb.startup.findFirst({
+    where: {
+      id: Number(params.startupId),
+    },
+    include: {
+      contacts: true,
+    },
+  });
+  if (!startup) redirect("/");
+  return {
+    title: `SUM - ${startup.name}`,
+  };
+}
+
 const StartupPage = async ({ params }: Props) => {
   const startup = await prismadb.startup.findFirst({
     where: {
       id: Number(params.startupId),
+    },
+    include: {
+      contacts: true,
     },
   });
 
@@ -59,7 +79,7 @@ const StartupPage = async ({ params }: Props) => {
           </Link>
         </div>
         <Separator />
-        <TabsPage />
+        <TabsSection data={{ contacts: startup.contacts }} />
       </div>
     </div>
   );

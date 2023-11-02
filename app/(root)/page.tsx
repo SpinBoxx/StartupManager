@@ -15,6 +15,7 @@ export default async function Home() {
   const startups = await prismadb.startup.findMany({
     include: {
       promo: true,
+      contacts: true,
     },
   });
 
@@ -22,6 +23,7 @@ export default async function Home() {
     ...startup,
     promo: undefined,
     promoName: startup.promo.name,
+    contact: startup.contacts.at(0),
   }));
 
   const promotions = await prismadb.promo.findMany();

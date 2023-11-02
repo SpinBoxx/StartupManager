@@ -78,6 +78,7 @@ export default function ModalAddUpdate({ promotions }: Props) {
     logo: z.any(),
     description: z.string({ required_error: startupDescriptionRequired }),
     promoId: z.number({ required_error: startupPromoRequired }),
+    contactId: z.number().optional(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -91,29 +92,29 @@ export default function ModalAddUpdate({ promotions }: Props) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-
+    let base64 = null;
     if (logo) {
       if (ACCEPTED_IMAGE_TYPES.includes(logo.type)) {
         if (logo.size < MAX_FILE_SIZE) {
-          const base64 = await fileToBase64(logo);
-          await fetchCustom(`/${apiEndpoint}`, {
-            body: JSON.stringify({ ...values, logo: base64 }),
-            method: "POST",
-          })
-            .then(async (response) => {
-              const data = await response.json();
-              if (response.ok) {
-                toast.success(toastSuccess);
-                router.refresh();
-              } else {
-                toast.error(data.message);
-              }
-            })
-            .catch(() => toast.error(toastError))
-            .finally(() => setLoading(false));
+          base64 = await fileToBase64(logo);
         }
       }
     }
+    await fetchCustom(`/${apiEndpoint}`, {
+      body: JSON.stringify({ ...values, logo: base64 }),
+      method: "POST",
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.ok) {
+          toast.success(toastSuccess);
+          router.refresh();
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch(() => toast.error(toastError))
+      .finally(() => setLoading(false));
   }
 
   return (

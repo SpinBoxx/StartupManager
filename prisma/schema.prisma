@@ -28,11 +28,11 @@ model Startup {
   name String 
   description String 
   logo String?
-  city String
-  address String
-  latitude String
-  longitude String
-  createdAt DateTime
+  city String?
+  address String?
+  latitude String?
+  longitude String?
+  createdAt DateTime?
 
   promo Promo @relation(fields: [promoId], references: [id])
   promoId Int 
