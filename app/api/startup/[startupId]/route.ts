@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { Openstreetmap } from "@/types/openstreet-map";
 import { NextResponse } from "next/server";
 
 interface Props {
@@ -45,7 +46,7 @@ export async function PATCH(req: Request, params: Props) {
 
   const body = await req.json();
 
-  const { contacts } = body;
+  const { contacts, city, address } = body;
 
   if (!startupId)
     return NextResponse.json({ message: noStartupId }, { status: 401 });
@@ -57,12 +58,30 @@ export async function PATCH(req: Request, params: Props) {
     },
   });
 
+  // On set la lattitude et longitude en utilisant une API externe
+  let longitude, lattitude;
+  if (city && address) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?city=${city}&format=jsonv2&limit=1&street=${address}`
+    );
+    // Ici on recupere un tableau qui contient x fois de location trouvé
+    const data: Openstreetmap[] = await response.json();
+    // On recupere la premiere location trouvé
+    const singleData = data.at(0);
+    if (response.ok && singleData !== undefined) {
+      longitude = singleData.lon;
+      lattitude = singleData.lat;
+    }
+  }
+
   const startup = await prismadb.startup.update({
     where: {
       id: Number(startupId),
     },
     data: {
       ...body,
+      longitude,
+      lattitude,
       contacts: {
         set: _contacts,
       },

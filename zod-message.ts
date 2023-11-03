@@ -20,3 +20,5 @@ export const lastnamePlaceholder = "Veuillez entrer le nom ici...";
 export const phoneNumberPlaceholder =
   "Veuillez entrer le num. tel. ici... (Ex. 0102030405)";
 export const statusPlaceholder = "Veuillez entrer le statut ici...";
+export const addressPlaceholder = "Veuillez entrer l'adresse ici...";
+export const cityPlaceholder = "Veuillez entrer la ville ici...";

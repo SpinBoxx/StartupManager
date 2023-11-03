@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { Edit, Pin } from "lucide-react";
+import { Cake, Edit, Pin } from "lucide-react";
 import { redirect } from "next/navigation";
 import { TabsSection } from "./components/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Metadata } from "next";
 import { start } from "repl";
+import { getFormattedDate } from "@/lib/utils";
+import { ReactNode } from "react";
 
 interface Props {
   params: {
@@ -64,11 +66,20 @@ const StartupPage = async ({ params }: Props) => {
             {startup.description}
           </p>
         </div>
-        <div>
-          <div className="flex flex-col items-center text-muted-foreground">
+        <div className="flex gap-x-8">
+          <StartupInfoDiv>
             <Pin className="h-4 w-4" />
-            Nantes
-          </div>
+            {startup.city}
+          </StartupInfoDiv>
+
+          {startup.createdAt !== null && (
+            <StartupInfoDiv>
+              <Cake className="h-5 w-5" />
+              <span className="text-sm">
+                {getFormattedDate(startup.createdAt)}
+              </span>
+            </StartupInfoDiv>
+          )}
         </div>
         <div className="ml-auto">
           <Link href={`/startup/${startup.id}/modifier`}>
@@ -79,8 +90,16 @@ const StartupPage = async ({ params }: Props) => {
           </Link>
         </div>
         <Separator />
-        <TabsSection data={{ contacts: startup.contacts }} />
+        <TabsSection data={{ contacts: startup.contacts, startup }} />
       </div>
+    </div>
+  );
+};
+
+const StartupInfoDiv = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="flex flex-col items-center  p-3 text-muted-foreground">
+      {children}
     </div>
   );
 };

@@ -26,12 +26,11 @@ import {
   Check,
   ChevronsUpDown,
   Loader2,
-  Plus,
   PlusCircle,
   Save,
 } from "lucide-react";
 import toast from "react-hot-toast";
-
+import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import { useRouter } from "next/navigation";
 import {
   startupDescriptionPlaceholder,
@@ -61,6 +60,7 @@ import Link from "next/link";
 import { useModal } from "@/app/(root)/parametres/contacts/components/contact-datatable/use-modal";
 import ModalAddUpdate from "@/app/(root)/parametres/contacts/components/contact-datatable/modal-add-update";
 import { Badge } from "@/components/ui/badge";
+import { addressPlaceholder, cityPlaceholder } from "@/zod-message";
 
 interface Props {
   data: {
@@ -81,7 +81,7 @@ export default function StartupEditForm({ data }: Props) {
     </>
   );
 
-  const toastSuccess = "La startup a bien été créé";
+  const toastSuccess = "La startup a bien été modifié";
   const toastError = "Une erreur est survenue dans la création de la startup";
   const apiEndpoint = "startup";
   const [loading, setLoading] = useState(false);
@@ -94,6 +94,12 @@ export default function StartupEditForm({ data }: Props) {
     description: z.string({ required_error: startupDescriptionRequired }),
     promoId: z.number({ required_error: startupPromoRequired }),
     contacts: z.array(z.number()),
+    address: z.string(),
+    city: z.string(),
+    createdAt: z.object({
+      startDate: z.date().nullable(),
+      endDate: z.date().nullable(),
+    }),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -103,6 +109,12 @@ export default function StartupEditForm({ data }: Props) {
       description: startup.description,
       promoId: startup.promoId,
       contacts: startup.contacts.map((contact) => contact.id),
+      address: startup.address ?? "",
+      city: startup.city ?? "",
+      createdAt: {
+        startDate: startup.createdAt ?? undefined,
+        endDate: startup.createdAt ?? undefined,
+      },
     },
   });
   const { control } = form;
@@ -111,7 +123,13 @@ export default function StartupEditForm({ data }: Props) {
     name: "contacts",
   });
 
+  useEffect(() => {
+    console.log(form.getValues().createdAt);
+  }, [form.getValues().createdAt]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+
     setLoading(true);
     let base64 = null;
     if (logo) {
@@ -122,7 +140,11 @@ export default function StartupEditForm({ data }: Props) {
       }
     }
     await fetchCustom(`/${apiEndpoint}/${startup.id}`, {
-      body: JSON.stringify({ ...values, logo: base64 }),
+      body: JSON.stringify({
+        ...values,
+        logo: base64,
+        createdAt: values.createdAt.startDate,
+      }),
       method: "PATCH",
     })
       .then(async (response) => {
@@ -221,6 +243,62 @@ export default function StartupEditForm({ data }: Props) {
               </FormItem>
             )}
           />
+          <div className="grid grid-cols-3 gap-x-4">
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Adresse</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder={addressPlaceholder} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Ville</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder={cityPlaceholder} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          {/* // @ts-ignore */}
+          <FormField
+            control={form.control}
+            name="createdAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date de création de la startup</FormLabel>
+                <FormControl>
+                  <Datepicker
+                    useRange={false}
+                    asSingle={true}
+                    {...field}
+                    onChange={(
+                      value: DateValueType,
+                      e?: HTMLInputElement | null | undefined
+                    ) =>
+                      form.setValue("createdAt", {
+                        startDate: new Date(value?.startDate as string),
+                        endDate: new Date(value?.startDate as string),
+                      })
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="promoId"

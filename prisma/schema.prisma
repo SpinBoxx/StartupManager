@@ -30,7 +30,7 @@ model Startup {
   logo String?
   city String?
   address String?
-  latitude String?
+  lattitude String?
   longitude String?
   createdAt DateTime?
 
