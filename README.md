@@ -1,31 +1,35 @@
 # Informations sur le projet 
 
-- Template Nextjs de base
-- Contient le framework CSS [TailwindCSS](https://tailwindcss.com/)
-- Contient une librarie d'icone [Lucide react](https://lucide.dev/)
-- Contient prettier avec un configuration de base ainsi qu'un plugin Tailwindcss pour formatter les classes Tailwindcss
-- Contient également eslint avec une configuration de base
-- Contient une librairie de composant React : Shadcn ui. Les composants se trouve dans le repertoire App/components/ui [Shadcn](https://ui.shadcn.com/)
-- Contient une bdd Prisma avec 2 entités de base User et Post
-  - Lancer une migration après une modification des schemas :
+C'est un projet personnel pour monter en competences sur :
+- React, Nextjs, React-hook-form, TailwindCss, Zustand, Prisma. 
+
+Le but de projet est de faire un management de startup. Sur site, il sera possible de faire : 
+- Pouvoir se connecter, modifier son profil
+- Pour les utilisateurs connectés :
+  - Ajouter, modifier, lire et supprimer une startup
+  - Exporter les startups en .csv, pdf
+  - Voir la localisation des startups sur une maps
+  - Pouvoir ajouter des pieces jointes aux startups
+  - Pouvoir ajouter un commentaire sur une startup
+
+Pour démarrer le projet, il faut :  
+- Cloner le projet
+- Télécharger les dépendances
+```bash
+npm install
+```
+- Faire une copie du .env en .env.local
+- Remplir les constantes du fichier .env.local
+- Lancer la génération des modeles Prisma 
 ```bash
 npx prisma generate
-# et ensuite
-npx prisma db push
 ```
-
-## Commencer
-
-1. Cloner le projet
-2. Setup l'origin du projet avec les commandes suivantes :
+- Lancer la migration de la base de donées
 ```bash
-# Pour voir l'origin actuelle du projet
-git remote -v
-# Pour supprimer l'origin actuelle du projet
-git remote remove origin
-# Pour ajouter l'origin de votre futur projet
-git remote add origin <url_de_votre_projet_git>
+npm run db:push
 ```
-3. npm install
-4. npm run dev
-5. Ouvrez [http://localhost:3000](http://localhost:3000) avec votre navigateur pour voir le résultat
+- Lancer le serveur
+```bash
+npm run dev
+```
+- Ouvrez [http://localhost:3000](http://localhost:3000) avec votre navigateur pour voir le résultat
