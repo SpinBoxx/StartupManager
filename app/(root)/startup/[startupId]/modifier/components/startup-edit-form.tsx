@@ -133,7 +133,9 @@ export default function StartupEditForm({ data }: Props) {
     if (logo) {
       if (ACCEPTED_IMAGE_TYPES.includes(logo.type)) {
         if (logo.size < MAX_FILE_SIZE) {
-          base64 = await fileToBase64(logo);
+          await fileToBase64(logo).then(
+            (response) => (base64 = response as string)
+          );
         }
       }
     }

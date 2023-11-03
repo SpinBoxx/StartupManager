@@ -9,6 +9,7 @@ import { Metadata } from "next";
 import { start } from "repl";
 import { getFormattedDate } from "@/lib/utils";
 import { ReactNode } from "react";
+import CommentsSection from "./components/comments-section/comment-section";
 
 interface Props {
   params: {
@@ -92,8 +93,10 @@ const StartupPage = async ({ params }: Props) => {
           </Link>
         </div>
         <Separator />
-        <TabsSection data={{ contacts: startup.contacts, startup }} />
+        {/* <TabsSection data={{ contacts: startup.contacts, startup }} /> */}
+        <Separator />
       </div>
+      <CommentsSection className="mt-6" startupId={startup.id} />
     </div>
   );
 };

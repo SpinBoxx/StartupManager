@@ -28,5 +28,6 @@ declare module "next-auth/jwt" {
     exp?: number;
     iat?: number;
     jti?: string;
+    user: User | UserAdapter;
   }
 }

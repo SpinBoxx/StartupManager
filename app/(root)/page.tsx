@@ -19,6 +19,9 @@ export default async function Home() {
       promo: true,
       contacts: true,
     },
+    orderBy: {
+      id: "desc",
+    },
   });
 
   const formattedStartups = startups.map((startup) => ({
@@ -29,14 +32,6 @@ export default async function Home() {
   }));
 
   const promotions = await prismadb.promo.findMany();
-  // await prismadb.startup.create({
-  //   data: {
-  //     name: "Promo test 1",
-  //     description: "Desctipnio tempo",
-  //     logo: "logo test",
-  //     promoId: 2,
-  //   },
-  // });
 
   return (
     <div>
