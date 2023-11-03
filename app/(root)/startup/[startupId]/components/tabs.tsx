@@ -26,7 +26,7 @@ export function TabsSection({ data }: Props) {
           <Map className="mr-2 h-6 w-6" /> Maps
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="account" className="mt-3">
+      <TabsContent value="account" className="mt-3 space-y-4">
         {data.contacts.map((contact) => (
           <ContactCard contact={contact} />
         ))}

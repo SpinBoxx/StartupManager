@@ -13,15 +13,19 @@ const UpdateStartupPage = async ({ params }: Props) => {
     where: {
       id: Number(params.startupId),
     },
+    include: {
+      contacts: true,
+    },
   });
 
   if (!startup) redirect("/");
 
   const promotions = await prismadb.promo.findMany();
+  const contacts = await prismadb.contact.findMany();
 
   return (
     <div>
-      <StartupEditForm promotions={promotions} startup={startup} />
+      <StartupEditForm data={{ promotions, startup, contacts }} />
     </div>
   );
 };

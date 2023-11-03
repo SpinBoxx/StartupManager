@@ -10,7 +10,7 @@ const MainLayout = ({ children }: Props) => {
   return (
     <div>
       <Navbar />
-      <Container className="mt-4">{children}</Container>
+      <Container className="mt-4 pb-6">{children}</Container>
     </div>
   );
 };

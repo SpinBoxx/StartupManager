@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -27,6 +27,7 @@ import {
   ChevronsUpDown,
   Loader2,
   Plus,
+  PlusCircle,
   Save,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -40,7 +41,6 @@ import {
   startupPromoRequired,
 } from "@/types/startup";
 import { cn, fileToBase64 } from "@/lib/utils";
-
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -48,7 +48,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Promo, Startup } from "@prisma/client";
+import { Contact, Promo, Startup } from "@prisma/client";
 import {
   Command,
   CommandEmpty,
@@ -58,14 +58,22 @@ import {
 } from "@/components/ui/command";
 import { fetchCustom } from "@/lib/custom-fetch";
 import Link from "next/link";
+import { useModal } from "@/app/(root)/parametres/contacts/components/contact-datatable/use-modal";
+import ModalAddUpdate from "@/app/(root)/parametres/contacts/components/contact-datatable/modal-add-update";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
-  promotions: Promo[];
-  startup: Startup;
+  data: {
+    promotions: Promo[];
+    startup: Startup & { contacts: Contact[] };
+    contacts: Contact[];
+  };
 }
 
-export default function StartupEditForm({ promotions, startup }: Props) {
+export default function StartupEditForm({ data }: Props) {
+  const { promotions, contacts, startup } = data;
   const [logo, setLogo] = useState<File>();
+  const { onOpen } = useModal();
   const submitButtonText = (
     <>
       <Save className="mr-2 h-4 w-4" />
@@ -85,6 +93,7 @@ export default function StartupEditForm({ promotions, startup }: Props) {
     logo: z.any(),
     description: z.string({ required_error: startupDescriptionRequired }),
     promoId: z.number({ required_error: startupPromoRequired }),
+    contacts: z.array(z.number()),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,198 +102,296 @@ export default function StartupEditForm({ promotions, startup }: Props) {
       logo: undefined,
       description: startup.description,
       promoId: startup.promoId,
+      contacts: startup.contacts.map((contact) => contact.id),
     },
+  });
+  const { control } = form;
+  const { append, remove } = useFieldArray({
+    control,
+    name: "contacts",
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-
+    let base64 = null;
     if (logo) {
       if (ACCEPTED_IMAGE_TYPES.includes(logo.type)) {
         if (logo.size < MAX_FILE_SIZE) {
-          const base64 = await fileToBase64(logo);
-          await fetchCustom(`/${apiEndpoint}`, {
-            body: JSON.stringify({ ...values, logo: base64 }),
-            method: "POST",
-          })
-            .then(async (response) => {
-              const data = await response.json();
-              if (response.ok) {
-                toast.success(toastSuccess);
-                router.refresh();
-              } else {
-                toast.error(data.message);
-              }
-            })
-            .catch(() => toast.error(toastError))
-            .finally(() => setLoading(false));
+          base64 = await fileToBase64(logo);
         }
       }
     }
+    await fetchCustom(`/${apiEndpoint}/${startup.id}`, {
+      body: JSON.stringify({ ...values, logo: base64 }),
+      method: "PATCH",
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.ok) {
+          toast.success(toastSuccess);
+          router.refresh();
+          router.push(`/startup/${startup.id}`);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch(() => toast.error(toastError))
+      .finally(() => setLoading(false));
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        encType="multipart/form-data"
-        className="space-y-4"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom</FormLabel>
-              <FormControl>
-                <Input placeholder={startupNamePlaceholder} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid grid-cols-1 gap-4">
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          encType="multipart/form-data"
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
-            name="logo"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Logo</FormLabel>
+                <FormLabel>Nom</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
+                  <Input placeholder={startupNamePlaceholder} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 gap-4">
+            <FormField
+              control={form.control}
+              name="logo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Logo</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      {...field}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setLogo(e.target.files[0]);
+                        } else {
+                          setLogo(undefined);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="mx-auto flex gap-x-6">
+              {startup.logo && (
+                <img
+                  src={startup.logo}
+                  width={150}
+                  height={150}
+                  alt="Startup logo"
+                />
+              )}
+              <ArrowRight className="my-auto w-fit" />
+              {logo && (
+                <Image
+                  width={150}
+                  height={150}
+                  src={URL.createObjectURL(logo)}
+                  alt="Logo startup"
+                />
+              )}
+            </div>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={startupDescriptionPlaceholder}
                     {...field}
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setLogo(e.target.files[0]);
-                      } else {
-                        setLogo(undefined);
-                      }
-                    }}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="mx-auto flex gap-x-6">
-            {startup.logo && (
-              <img
-                src={startup.logo}
-                width={150}
-                height={150}
-                alt="Startup logo"
-              />
-            )}
-            <ArrowRight className="my-auto w-fit" />
-            {logo && (
-              <Image
-                width={150}
-                height={150}
-                src={URL.createObjectURL(logo)}
-                alt="Logo startup"
-              />
-            )}
-          </div>
-        </div>
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder={startupDescriptionPlaceholder}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="promoId"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value
-                        ? promotions.find((promo) => promo.id === field.value)
-                            ?.name
-                        : "Selectionne une promo"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="p-0">
-                  <Command>
-                    <CommandInput placeholder="Search language..." />
-                    <CommandEmpty>No language found.</CommandEmpty>
-                    <CommandGroup>
-                      {promotions.map((promo) => (
-                        <CommandItem
-                          value={promo.name}
-                          key={promo.id}
-                          onSelect={() => {
-                            form.setValue("promoId", promo.id);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              promo.id === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {promo.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+          <FormField
+            control={form.control}
+            name="promoId"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Promo</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value
+                          ? promotions.find((promo) => promo.id === field.value)
+                              ?.name
+                          : "Selectionne une promo"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <CommandInput placeholder="Chercher une promo..." />
+                      <CommandEmpty>Aucune promo trouvé</CommandEmpty>
+                      <CommandGroup>
+                        {promotions.map((promo) => (
+                          <CommandItem
+                            value={promo.name}
+                            key={promo.id}
+                            onSelect={() => {
+                              form.setValue("promoId", promo.id);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                promo.id === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {promo.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex justify-between">
-          <Link href={`/startup/${startup.id}`}>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="contacts"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Contacts</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "relative justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <div className="space-x-3">
+                          {field.value
+                            ? field.value.map((id) => (
+                                <Badge variant="secondary">
+                                  {
+                                    contacts.find(
+                                      (contact) => id === contact.id
+                                    )?.firstname
+                                  }
+                                </Badge>
+                              ))
+                            : "Selectionne une promo"}
+                        </div>
+
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <div className="relative">
+                        <PlusCircle
+                          onClick={onOpen}
+                          className="absolute bottom-1/2 right-2 top-1/2 my-auto h-4 w-4 cursor-pointer text-muted-foreground"
+                        />
+                        <CommandInput placeholder="Chercher un contact..." />
+                      </div>
+
+                      <CommandEmpty>Aucun contact trouvé.</CommandEmpty>
+                      <CommandGroup>
+                        {contacts.map((contact, index) => (
+                          <CommandItem
+                            value={contact.id.toString()}
+                            key={contact.id}
+                            onSelect={() => {
+                              // Si le contact est deja selectionne on remove
+                              if (field.value.includes(contact.id)) {
+                                remove(
+                                  field.value.findIndex(
+                                    (id) => id === contact.id
+                                  )
+                                );
+                              } else {
+                                // Sinon on ajoute
+                                append(contact.id);
+                              }
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                field.value.includes(contact.id)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {contact.firstname}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-between">
+            <Link href={`/startup/${startup.id}`}>
+              <Button
+                type="button"
+                className="flex items-center"
+                disabled={loading}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+              </Button>
+            </Link>
+
             <Button
-              type="button"
+              type="submit"
               className="flex items-center"
               disabled={loading}
             >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                submitButtonText
+              )}
             </Button>
-          </Link>
-
-          <Button
-            type="submit"
-            className="flex items-center"
-            disabled={loading}
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              submitButtonText
-            )}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          </div>
+        </form>
+      </Form>
+      <ModalAddUpdate />
+    </>
   );
 }

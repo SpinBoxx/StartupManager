@@ -42,18 +42,32 @@ export async function DELETE(req: Request, params: Props) {
 
 export async function PATCH(req: Request, params: Props) {
   const { startupId } = { ...params.params };
+
   const body = await req.json();
 
-  if (!startupId) return NextResponse.json({ message: noStartupId });
+  const { contacts } = body;
+
+  if (!startupId)
+    return NextResponse.json({ message: noStartupId }, { status: 401 });
+  const _contacts = await prismadb.contact.findMany({
+    where: {
+      id: {
+        in: contacts,
+      },
+    },
+  });
 
   const startup = await prismadb.startup.update({
     where: {
       id: Number(startupId),
     },
     data: {
-      ...body,
+      // ...body,
+      contacts: {
+        set: _contacts,
+      },
     },
   });
 
-  return NextResponse.json(startup);
+  return NextResponse.json(startup, { status: 200 });
 }
