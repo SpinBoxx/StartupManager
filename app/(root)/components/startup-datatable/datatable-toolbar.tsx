@@ -17,9 +17,19 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
   const { onOpen } = useModal();
 
-  const exportData = table.getSelectedRowModel().rows.map(({ original }) => ({
+  const selectedData = table.getSelectedRowModel().rows.map(({ original }) => ({
     ...original,
+    contact: null,
   }));
+
+  const exportData =
+    selectedData.length !== 0
+      ? selectedData
+      : table.getRowModel().rows.map(({ original }) => ({
+          ...original,
+          contact: null,
+        }));
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">

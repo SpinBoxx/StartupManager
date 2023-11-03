@@ -62,7 +62,7 @@ export async function PATCH(req: Request, params: Props) {
       id: Number(startupId),
     },
     data: {
-      // ...body,
+      ...body,
       contacts: {
         set: _contacts,
       },

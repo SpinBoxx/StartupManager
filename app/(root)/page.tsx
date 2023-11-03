@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: "Startup Manager",
 };
 
+export const revalidate = 0;
+
 export default async function Home() {
   const startups = await prismadb.startup.findMany({
     include: {
