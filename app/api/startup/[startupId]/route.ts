@@ -72,6 +72,9 @@ export async function PATCH(req: Request, params: Props) {
       longitude = singleData.lon;
       lattitude = singleData.lat;
     }
+  } else {
+    longitude = null;
+    lattitude = null;
   }
 
   const startup = await prismadb.startup.update({

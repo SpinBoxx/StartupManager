@@ -67,10 +67,12 @@ const StartupPage = async ({ params }: Props) => {
           </p>
         </div>
         <div className="flex gap-x-8">
-          <StartupInfoDiv>
-            <Pin className="h-4 w-4" />
-            {startup.city}
-          </StartupInfoDiv>
+          {startup.city && (
+            <StartupInfoDiv>
+              <Pin className="h-4 w-4" />
+              {startup.city}
+            </StartupInfoDiv>
+          )}
 
           {startup.createdAt !== null && (
             <StartupInfoDiv>

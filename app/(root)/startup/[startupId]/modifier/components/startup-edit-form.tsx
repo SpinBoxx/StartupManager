@@ -128,10 +128,8 @@ export default function StartupEditForm({ data }: Props) {
   }, [form.getValues().createdAt]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
     setLoading(true);
-    let base64 = null;
+    let base64 = startup.logo;
     if (logo) {
       if (ACCEPTED_IMAGE_TYPES.includes(logo.type)) {
         if (logo.size < MAX_FILE_SIZE) {
