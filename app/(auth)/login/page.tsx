@@ -1,12 +1,18 @@
 import { Separator } from "@/components/ui/separator";
 import LoginForm from "./components/login-form";
 import { Metadata } from "next";
+import getSession from "@/actions/get-session";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "SUM - Login",
 };
 
-const LoginPage = () => {
+const LoginPage = async () => {
+  const session = await getSession();
+  if (session?.user?.email) {
+    redirect("/");
+  }
   return (
     <div className="flex h-full flex-col items-center justify-center ">
       <div>LOGO</div>

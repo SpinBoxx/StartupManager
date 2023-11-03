@@ -15,7 +15,7 @@ const MyProfilPage = async () => {
 
   const user = await prismadb.user.findFirst({
     where: {
-      email: session.user.email,
+      email: session.user?.email,
     },
   });
   if (!user) return <Loader2 className="animate-spin" />;
