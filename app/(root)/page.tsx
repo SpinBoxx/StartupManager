@@ -5,7 +5,6 @@ import Header from "@/components/header";
 import prismadb from "@/lib/prismadb";
 import { columns } from "./components/startup-datatable/columns";
 import ModalAddUpdate from "./components/startup-datatable/modal-add-update";
-import ExportButton from "./components/export-button";
 
 export const metadata: Metadata = {
   title: "Startup Manager",

@@ -93,10 +93,10 @@ const StartupPage = async ({ params }: Props) => {
           </Link>
         </div>
         <Separator />
-        {/* <TabsSection data={{ contacts: startup.contacts, startup }} /> */}
-        <Separator />
+        <TabsSection data={{ contacts: startup.contacts, startup }} />
+        <Separator className="my-6" />
       </div>
-      <CommentsSection className="mt-6" startupId={startup.id} />
+      <CommentsSection startupId={startup.id} />
     </div>
   );
 };

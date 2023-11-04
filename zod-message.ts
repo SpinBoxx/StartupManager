@@ -23,4 +23,4 @@ export const statusPlaceholder = "Veuillez entrer le statut ici...";
 export const addressPlaceholder = "Veuillez entrer l'adresse ici...";
 export const cityPlaceholder = "Veuillez entrer la ville ici...";
 export const commentPlaceholder =
-  "Si vous le voulez, vous pouvez écrire un commentaire pour cette startup. Il sera visible pour tous les autres utilisateurs.";
+  "Ajouter un nouveau commentaire. Il sera visible pour tous les autres utilisateurs.";

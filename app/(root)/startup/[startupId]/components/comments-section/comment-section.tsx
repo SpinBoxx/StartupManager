@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import prismadb from "@/lib/prismadb";
 import AddCommentForm from "./add-comment-form";
 import DisplayComments from "./display-comments";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   className?: string;
@@ -16,6 +17,9 @@ const CommentsSection = async ({ className, startupId }: Props) => {
     orderBy: {
       id: "desc",
     },
+    include: {
+      user: true,
+    },
   });
 
   return (
@@ -23,12 +27,12 @@ const CommentsSection = async ({ className, startupId }: Props) => {
       <Header
         data={{
           title: "Les commentaires",
-          description: "Retrouve ici tous les commentaires liés à la startup.",
           nbItem: comments.length,
         }}
       />
       <AddCommentForm className="mt-4" startupId={startupId} />
-      <DisplayComments comments={comments} />
+      <Separator className="my-6" />
+      <DisplayComments className="mt-4" comments={comments} />
     </div>
   );
 };

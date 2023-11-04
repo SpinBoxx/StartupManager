@@ -1,7 +1,7 @@
 interface Props {
   data: {
     title: string;
-    description: string;
+    description?: string;
     nbItem?: number;
   };
 }

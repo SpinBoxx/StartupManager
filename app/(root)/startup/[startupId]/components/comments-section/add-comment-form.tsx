@@ -77,8 +77,17 @@ const AddCommentForm = ({ startupId, className }: Props) => {
                   <Textarea
                     placeholder={commentPlaceholder}
                     {...field}
-                    className="pr-4"
+                    className="bg-[#F2F2F2] pr-24 shadow"
                   />
+                  <div className="absolute bottom-2 right-4">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="ml-auto rounded-lg"
+                    >
+                      Ajouter
+                    </Button>
+                  </div>
                 </div>
               </FormControl>
 
@@ -86,11 +95,6 @@ const AddCommentForm = ({ startupId, className }: Props) => {
             </FormItem>
           )}
         />
-        <div className="flex w-full">
-          <Button type="submit" className="ml-auto">
-            Ajouter <SendHorizonal className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
       </form>
     </Form>
   );

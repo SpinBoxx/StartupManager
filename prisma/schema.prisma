@@ -71,5 +71,7 @@ model Comment {
 
   startup Startup? @relation(fields: [startupId], references: [id])
   startupId Int? 
+
+  createdAt DateTime @default(now())
 }
 
