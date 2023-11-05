@@ -23,9 +23,6 @@ export async function generateMetadata({ params }: Props) {
     where: {
       id: Number(params.startupId),
     },
-    include: {
-      contacts: true,
-    },
   });
   if (!startup) redirect("/");
   return {
@@ -40,6 +37,7 @@ const StartupPage = async ({ params }: Props) => {
     },
     include: {
       contacts: true,
+      attachments: true,
     },
   });
 

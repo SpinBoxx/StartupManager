@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 
 import ToastProvider from "@/providers/toast-provider";
 import { Toaster } from "react-hot-toast";
+import ReactQueryProvider from "@/providers/reactquery-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,8 +18,10 @@ export default function MainLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <Toaster />
-          {children}
+          <ReactQueryProvider>
+            <Toaster />
+            {children}
+          </ReactQueryProvider>
         </AuthProvider>
       </body>
     </html>

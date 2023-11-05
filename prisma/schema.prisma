@@ -41,6 +41,7 @@ model Startup {
 
   contacts Contact[]
   comments Comment[]
+  attachments StartupAttachments[]
 }
 
 model Contact {
@@ -69,9 +70,20 @@ model Comment {
   user User? @relation(fields: [userId], references: [id])
   userId Int? 
 
-  startup Startup? @relation(fields: [startupId], references: [id])
+  startup Startup? @relation(fields: [startupId], references: [id], onDelete: Cascade)
   startupId Int? 
 
   createdAt DateTime @default(now())
 }
 
+model StartupAttachments { 
+  id    Int     @id @default(autoincrement())
+
+  title String
+  file String
+  extension String
+
+  startup Startup? @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  startupId Int? 
+  createdAt DateTime @default(now())
+}
