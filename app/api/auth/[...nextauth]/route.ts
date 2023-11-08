@@ -2,8 +2,7 @@ import prismadb from "@/lib/prismadb";
 import NextAuth, { AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-import { User } from "@prisma/client";
+import bcryptjs from "bcryptjs";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prismadb),
@@ -31,7 +30,7 @@ export const authOptions: AuthOptions = {
 
         console.log(credentials);
 
-        const isPasswordMatch = await bcrypt.compare(
+        const isPasswordMatch = await bcryptjs.compare(
           credentials.password,
           user.password
         );
