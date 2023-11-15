@@ -1,42 +1,35 @@
-"use client";
+import Header from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { fetchCustom } from "@/lib/custom-fetch";
+import { fileToBase64 } from "@/lib/utils";
+import { Download } from "lucide-react";
 
-import { useState } from "react";
+import fs from "fs-extra";
+import DisplayTemplateColomn from "./components/display-template-column";
 
-const ImportPage = () => {
-  const [jsonData, setJsonData] = useState(null);
+const ImportPage = async () => {
+  // FS ne s'utilise uniquement coté BACKEND
+  const file = await fs.readFile("./public/templates-import/startup.xlsx");
 
-  const handleCSVInputChange = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+  let jsonFile = JSON.stringify(file);
 
-    reader.onload = (e) => {
-      const csvData = e.target.result;
-      const jsonData = convertCSVToJson(csvData);
-      setJsonData(jsonData);
-    };
-
-    reader.readAsText(file);
-  };
   return (
     <div>
-      <input type="file" accept=".csv" onChange={handleCSVInputChange} />
-      <div>
-        <a
-          href="/templates-import/startup.xlsx"
-          download="startup.xlsx"
-          type="file"
-        >
-          {" "}
-          Telecharger le template
-        </a>
-      </div>
-      {jsonData ? (
-        <div className="json-container">
-          <pre>{JSON.stringify(jsonData, null, 2)}</pre>
-        </div>
-      ) : (
-        <p>Please select a CSV file.</p>
-      )}
+      <Header
+        data={{
+          title: "Importez vos startups",
+          description:
+            "Téléchargez le template .xlsx et remplissez le avec vos données puis importez le dans l'input ci-dessous. Toutes les startups seront enregistrées dans la bdd.",
+        }}
+      />
+
+      <Button className="mt-4 flex items-center">
+        <Download className="mr-2 h-4 w-4" />
+        Télécharger le template .xlsx
+      </Button>
+
+      {/* On parse car on ne peut pas passer un buffer comme prop */}
+      <DisplayTemplateColomn file={JSON.parse(jsonFile)} />
     </div>
   );
 };

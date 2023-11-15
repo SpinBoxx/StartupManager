@@ -58,8 +58,8 @@ model Contact {
 
 model Promo {
   id    Int     @id @default(autoincrement())
-  startup Startup[]
-  name String
+  startup Startup[] 
+  name String @unique
 }
 
 model Comment {
